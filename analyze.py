@@ -32,17 +32,10 @@ def create_orders(symbol, j_values, quantity):
 		print("Creating " + str(quantity) + " buy order(s) for " + str(symbol))
 		apca.submit_order(symbol, quantity, "buy", "market", "gtc")
 
-key='PK85EHCP5TAO0SX29QYM'
-secret_key='U1AGrWz74yPEPbiCt01Le6ZZYpYturN27rDcFluy'
-endpoint_URL='https://paper-api.alpaca.markets'
 apca = alpaca.REST(key, secret_key, endpoint_URL)
 a = kdj("BIO")
 #a["kdj_jd_diff"] = a["kdjj"] - a["kdjd"]
-#print(a)
 create_orders("BIO", a["kdjj"], 100)
-
-
-#writer("BIO")
 
 #a columns
 '''
@@ -51,13 +44,3 @@ Index(['open', 'high', 'low', 'close', 'volume', 'dividends', 'stock splits',
        'kdj_jd_diff'],
       dtype='object')
 '''
-
-#-------------------------------------------------------------#
-
-#ticker="BIO"
-#symbol=st.StockDataFrame.retype(pd.read_csv('BIO.csv'))
-
-#b=pd.read_csv(ticker.upper()+".csv")
-#a = pandas.core.series.Series
-#b["kdj_j"]=a.to_list()
-#print(b.head())

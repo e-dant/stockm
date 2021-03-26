@@ -1,3 +1,9 @@
+# Utilities, etc
+util/
+vars.sh
+account.py
+private.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
