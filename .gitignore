@@ -3,6 +3,7 @@ util/
 vars.sh
 account.py
 private.py
+credentials.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
