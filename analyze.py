@@ -3,6 +3,8 @@ import yfinance as yf
 import stockstats as st
 import pandas as pd
 import alpaca_trade_api as alpaca
+from sys import path 
+from credentials import get_credentials
 
 def writer(symbol, columns=["Open","High",
 						"Low","Close","Volume",
@@ -12,14 +14,11 @@ def writer(symbol, columns=["Open","High",
 	hist.to_csv(str(symbol+".csv"), header=columns, sep=",", index=True)
 
 def kdj(symbol):
-	kdj_values = pd.read_csv(symbol.upper()+".csv")
+	kdj_values = pd.read_csv("historical/"+symbol.upper()+".csv")
 	kdj_values["kdjj"] = (st.StockDataFrame.retype(kdj_values).get("kdjj")).to_list()
 	return(kdj_values)
 
-def std_dev(_a):
-	return _a.std()
-
-def create_orders(symbol, j_values, quantity):
+def conditional_order(symbol, j_values, quantity):
 	# read kdj, see if the most recent 
 	# J value is less than 20 or above 80
 	# if so, return a corresponding order 
@@ -32,10 +31,15 @@ def create_orders(symbol, j_values, quantity):
 		print("Creating " + str(quantity) + " buy order(s) for " + str(symbol))
 		apca.submit_order(symbol, quantity, "buy", "market", "gtc")
 
-apca = alpaca.REST(key, secret_key, endpoint_URL)
+path.append("historical/")
+credentials = get_credentials()
+apca = alpaca.REST(credentials["key"], 
+			credentials["secret_key"], 
+			credentials["endpoint_URL"])
 a = kdj("BIO")
 #a["kdj_jd_diff"] = a["kdjj"] - a["kdjd"]
-create_orders("BIO", a["kdjj"], 100)
+conditional_order("BIO", a["kdjj"], 100)
+apca.list_orders()
 
 #a columns
 '''
