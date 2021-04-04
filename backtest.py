@@ -85,7 +85,7 @@ def test(arr, size_arr):
 		can_buy = int(liquidequity/prices[i]) > 1
 		if should_order(j):
 			#create buy or sell orders based on the magnitude
-
+			continue
 		if j <= 10 and can_buy:
 			buys = int((liquidequity/prices[i]))
 			toprint+="buy:  "+ str(buys)+", "
@@ -110,7 +110,7 @@ def test(arr, size_arr):
 
 symbol = "BIO"
 symbol = symbol.upper()
-#writer_BT(symbol)
+writer_BT(symbol)
 historical = pd.read_csv("historical/"+symbol+"_BT.csv")
 #print(historical)
 #a=kdj(symbol)
