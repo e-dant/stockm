@@ -48,81 +48,89 @@ def buy_magnitude(j,buyingpower):
 		return buyingpower / 20
 	elif j >= 80:
 		return buyingpower / 40
+	else:
+		return None
 
-def sell_magnitude(j,totalshares):
+def sell_magnitude(j,total_shares):
 	if j <= 20:
-		return totalshares / 40
+		return total_shares / 40
 	elif j <= 10:
-		return totalshares / 20
+		return total_shares / 20
 	elif j <= 0:
-		return totalshares / 10
+		return total_shares / 10
+	else:
+		return None
 
-def order(side,amount,price,liquidequity,totalshares,date):
+#TODO make a new function to update the variables side, amount, price, liquid_equity, total_shares, date
+def order(side, amount, price, liquid_equity, total_shares, date):
 	#log the order given
 	#update equtiy and current shares
 	#returns a list w/ updated order aguments
 	if side == 'buy':
-		liquidequity -= (amount*price)
-		totalshares += amount
+		liquid_equity -= (amount*price)
+		total_shares += amount
 	else:
-		liquidequity += (amount*price)
-		totalshares -= amount
+		liquid_equity += (amount*price)
+		total_shares -= amount
+	return([side, amount, price, liquid_equity, total_shares, date])
 
-	return [side,amount,price,liquidequity,totalshares,date]
-
-def test(arr, size_arr):
+def bt(j_by_date, size):
 	log = []
-	liquidequity = 10000
-	prices = historical['Open'].tolist()
-	log.append(order('buy', int(liquidequity/prices[0]), prices[0],liquidequity, 0, historical[0]))
-	for i in range(size_arr):
+	liquid_equity = 10000
+	#TODO make local variables for side, amount, price, liquid_equity, total_shares, date
+	prices = pd.read_csv("historical/"+symbol+"_BT.csv")["Open"].tolist()
+	log.append(order('buy', int(liquid_equity/prices[0]), prices[0], liquid_equity, 0, j_by_date[0][0]))
+	print(log)
+	print(log[0][3])
+	for i in range(0,0,size):
 		side = ''
 		amount = 0
+		print(i)
 		currentprice = prices[i]
-		currentdate = historical[i]
-		liquidequity = log[i][3]
-		j = arr[i][0]
-		can_buy = int(liquidequity/prices[i]) > 1
+		currentdate = b[i]
+		liquid_equity = log[i][3]
+		j = j_by_date[i][0]
+		can_buy = int(liquid_equity/prices[i]) > 1
 		if should_order(j):
 			#create buy or sell orders based on the magnitude
-			continue
-		if j <= 10 and can_buy:
-			buys = int((liquidequity/prices[i]))
-			toprint+="buy:  "+ str(buys)+", "
-			toprint+='price:'+ str(prices[i])
-			equity -= prices[i] * buys
-
-		elif arr[i][0] >= 90:
-			amt = int(det_buying_pwr(arr[i][0], liquidequity/prices[i]))
-			buys -= amt
-			toprint+='sold: ' + str(amt) + ', '
-			toprint+='price:'+ str(prices[i])
-			#if equity + (prices[i] * buys) < equity:
-				#print("we lost boys", prices[i])
-			liquidequity += (prices[i] * buys)
-			toprint+='new equity'+ str(liquidequity)
+			if buy_magnitude(j):
+				#TODO update local variables side, amount, price, liquid_equity, total_shares, date
+				#TODO DO THE ABOVE OUTSIDE OF THE ORDER FUNCTION
+				log.append(order('buy', int(liquid_equity/prices[i]), prices[i], liquid_equity, 0, j_by_date[0][0]))
+			sells = sell_magnitude(j)
+			
 		if toprint:
 			print(toprint)
+		print(liquid_equity + (buys * prices[i]), buys)
 
+		#if j <= 10 and can_buy:
+			#buys = int((liquid_equity/prices[i]))
+			#toprint+="buy:  "+ str(buys)+", "
+			#toprint+='price:'+ str(prices[i])
+			#equity -= prices[i] * buys
 
-
-	print(liquidequity + (buys * prices[i]), buys)
+		#elif j_by_date[i][0] >= 90:
+			#amt = int(det_buying_pwr(j_by_date[i][0], liquid_equity/prices[i]))
+			#buys -= amt
+			#toprint+='sold: ' + str(amt) + ', '
+			#toprint+='price:'+ str(prices[i])
+			#if equity + (prices[i] * buys) < equity:
+				#print("we lost boys", prices[i])
+			#liquid_equity += (prices[i] * buys)
+			#toprint+='new equity'+ str(liquid_equity)
 
 symbol = "BIO"
 symbol = symbol.upper()
-writer_BT(symbol)
-historical = pd.read_csv("historical/"+symbol+"_BT.csv")
+#writer_BT(symbol)
 #print(historical)
 #a=kdj(symbol)
 #print(a)
 total_equity = 10000
-PL = 0
-orders = [] #date, side, price
 a = kdj(symbol)
 b = (yf.Ticker(symbol).history(start = '2000-01-01', end = '2020-01-01').index)
 c = []
 for i in b:
 	c.append(i.__str__())
-d = list(zip(a,c))
-
-test(d, len(d))
+j_by_date = list(zip(a,c))
+#print(j_by_date)
+bt(j_by_date, len(j_by_date))
