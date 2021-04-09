@@ -63,9 +63,8 @@ def sell_magnitude(j,total_shares):
 
 #TODO make a new function to update the variables side, amount, price, liquid_equity, total_shares, date
 def order(side, amount, price, liquid_equity, total_shares, date):
-	#log the order given
-	#update equtiy and current shares
-	#returns a list w/ updated order aguments
+	#update equity, log order
+	#does not return
 	if side == 'buy':
 		liquid_equity -= (amount*price)
 		total_shares += amount
@@ -73,6 +72,28 @@ def order(side, amount, price, liquid_equity, total_shares, date):
 		liquid_equity += (amount*price)
 		total_shares -= amount
 	return([side, amount, price, liquid_equity, total_shares, date])
+
+def update_equity(side, amount, price, last_equity):
+	#given the most recent order and current equity return the new equity as a list with 3 elements
+	#total liquid equity [0], total number of shares [1], total value of those shares [2]
+
+	#first check to see what side is
+	#if side is buy
+		#last_equity[0] - (amount * price)
+			#last_equity[0] is the total liquid equity (cash)
+	#if side is sell last_equity[0] + (amount * price)
+	order_liquid = amount * price
+	if side == 'buy':
+		order_liquid * -1
+
+	new_equity = [last_equity[0] + order_liquid, last_equity[1] + amount,  ]
+	return 0
+
+def log_order(side, amount, price, date):
+	#update and return a historical list of all orders
+	#remember to append the return value to a historical list
+	#TODO put decerator on it later
+	return [side, amount, price, date]
 
 def bt(j_by_date, size):
 	log = []
@@ -98,7 +119,7 @@ def bt(j_by_date, size):
 				#TODO DO THE ABOVE OUTSIDE OF THE ORDER FUNCTION
 				log.append(order('buy', int(liquid_equity/prices[i]), prices[i], liquid_equity, 0, j_by_date[0][0]))
 			sells = sell_magnitude(j)
-			
+
 		if toprint:
 			print(toprint)
 		print(liquid_equity + (buys * prices[i]), buys)
@@ -134,3 +155,4 @@ for i in b:
 j_by_date = list(zip(a,c))
 #print(j_by_date)
 bt(j_by_date, len(j_by_date))
+
