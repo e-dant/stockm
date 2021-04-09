@@ -1,5 +1,6 @@
 # Utilities, etc
 util/
+.idea/
 vars.sh
 account.py
 private.py
