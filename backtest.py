@@ -109,6 +109,7 @@ def bt(j_values, dates, size):
 	total_shares = log[0][-2]
 	liquid_equity = log[0][3]
 	for i in range(0,size):
+		#TODO fix indexing isues with log list
 		side = ''
 		amount = 0
 		currentprice = prices[i]
