@@ -36,27 +36,31 @@ def conditional_order_BT(symbol, j_values, quantity):
 		#apca.submit_order(symbol, quantity, "buy", "market", "gtc")
 
 def should_order(j):
-	if 80 < j < 20:
-		return False
-	else:
-		return True
-
-def buy_magnitude(j,buyingpower):
 	if j >= 100:
+		return 'buy'
+	elif j <= 0:
+		return 'sell'
+	else:
+		return None
+
+#TODO pass in a new variable to define the range to compare the j value
+#TODO such as if (j >= 120) or if (j >= range(n))
+def buy_magnitude(j,buyingpower):
+	if j >= 120:
 		return buyingpower / 10
-	elif j >= 90:
+	elif j >= 110:
 		return buyingpower / 20
-	elif j >= 80:
+	elif j >= 100:
 		return buyingpower / 40
 	else:
 		return None
 
 def sell_magnitude(j,total_shares):
-	if j <= 20:
+	if j <= 0:
 		return total_shares / 40
-	elif j <= 10:
+	elif j <= -10:
 		return total_shares / 20
-	elif j <= 0:
+	elif j <= -20:
 		return total_shares / 10
 	else:
 		return None
@@ -95,34 +99,37 @@ def log_order(side, amount, price, date):
 	#TODO put decerator on it later
 	return [side, amount, price, date]
 
-def bt(j_by_date, size):
+def bt(j_values, dates, size):
 	log = []
 	liquid_equity = 10000
 	#TODO make local variables for side, amount, price, liquid_equity, total_shares, date
 	prices = pd.read_csv("historical/"+symbol+"_BT.csv")["Open"].tolist()
-	log.append(order('buy', int(liquid_equity/prices[0]), prices[0], liquid_equity, 0, j_by_date[0][0]))
-	print(log)
-	print(log[0][3])
-	for i in range(0,0,size):
+	#side, amount, price, liquid_equity, total_shares, date
+	log.append(order('buy', int(liquid_equity/prices[0]), prices[0], liquid_equity, 0, dates[0]))
+	total_shares = log[0][-2]
+	liquid_equity = log[0][3]
+	for i in range(0,size):
 		side = ''
 		amount = 0
-		print(i)
 		currentprice = prices[i]
 		currentdate = b[i]
 		liquid_equity = log[i][3]
-		j = j_by_date[i][0]
+		j = j_values[i]
 		can_buy = int(liquid_equity/prices[i]) > 1
-		if should_order(j):
+		#TODO change buy magnitude and sell magnitude to order magnitude
+		#TODO pass string from should_order into order_magnitude and determine order magnitude from there
+		if should_order(j) == 'buy':
+			# TODO update local variables side, amount, price, liquid_equity, total_shares, date
+			# TODO DO THE ABOVE OUTSIDE OF THE ORDER FUNCTION
 			#create buy or sell orders based on the magnitude
-			if buy_magnitude(j):
-				#TODO update local variables side, amount, price, liquid_equity, total_shares, date
-				#TODO DO THE ABOVE OUTSIDE OF THE ORDER FUNCTION
-				log.append(order('buy', int(liquid_equity/prices[i]), prices[i], liquid_equity, 0, j_by_date[0][0]))
-			sells = sell_magnitude(j)
+			amount = buy_magnitude(j, liquid_equity)
+			log.append(order('buy', amount, prices[i], liquid_equity, 0, dates[i]))
+		elif should_order(j) == 'sell':
+			amount = sell_magnitude(j, liquid_equity)
+			log.append(order('buy', amount, prices[i], liquid_equity, 0, dates[i]))
+		else:
+			continue
 
-		if toprint:
-			print(toprint)
-		print(liquid_equity + (buys * prices[i]), buys)
 
 		#if j <= 10 and can_buy:
 			#buys = int((liquid_equity/prices[i]))
@@ -154,5 +161,5 @@ for i in b:
 	c.append(i.__str__())
 j_by_date = list(zip(a,c))
 #print(j_by_date)
-bt(j_by_date, len(j_by_date))
+bt(a,c, len(j_by_date))
 
