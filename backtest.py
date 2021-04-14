@@ -8,6 +8,7 @@ import stockstats as st
 import pandas as pd
 
 
+
 def writer_BT(symbol, columns=["Open","High",
 						"Low","Close","Volume",
 						"Dividends","Stock Splits"]):
@@ -99,16 +100,42 @@ def log_order(side, amount, price, date):
 	#TODO put decerator on it later
 	return [side, amount, price, date]
 
+#log object:
+# constructor: empty
+# methods: convert from data given (from dict, list, tuple, etc)
+# print
+# append
+# list_all
+# shape
+# convert_from
+# convert_to
+# getters/setters
+
+class log:
+	def __init__(self):
+		#TODO make local variables local variables side, amount, price, liquid_equity, total_shares, date
+		#TODO keys by j valus??? profit.
+		a = []
+	def pprint(self):
+		print(self.a)
+	def append(b, self):
+		self.a.append(b)
+	def get_element()
+
 def bt(j_values, dates, size):
 	log = []
 	liquid_equity = 10000
-	#TODO make local variables for side, amount, price, liquid_equity, total_shares, date
 	prices = pd.read_csv("historical/"+symbol+"_BT.csv")["Open"].tolist()
 	#side, amount, price, liquid_equity, total_shares, date
 	log.append(order('buy', int(liquid_equity/prices[0]), prices[0], liquid_equity, 0, dates[0]))
 	total_shares = log[0][-2]
 	liquid_equity = log[0][3]
+	log.append([None, None, None, None, None, None])
+	log.append(order('buy', 2, prices[2], 2000, 0, dates[2]))
+	print(log[1])
+	print(log[2][3])
 	for i in range(0,size):
+		print(i)
 		#TODO fix indexing isues with log list
 		side = ''
 		amount = 0
@@ -129,7 +156,7 @@ def bt(j_values, dates, size):
 			amount = sell_magnitude(j, liquid_equity)
 			log.append(order('buy', amount, prices[i], liquid_equity, 0, dates[i]))
 		else:
-			continue
+			log.append([None, None])
 
 
 		#if j <= 10 and can_buy:
