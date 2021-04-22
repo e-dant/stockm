@@ -7,7 +7,7 @@ import csv
 import stockstats as st
 import pandas as pd
 
-
+#TODO: Make a Wallet Object
 
 def writer_BT(symbol, columns=["Open","High",
 						"Low","Close","Volume",
@@ -94,12 +94,6 @@ def update_equity(side, amount, price, last_equity):
 	new_equity = [last_equity[0] + order_liquid, last_equity[1] + amount,  ]
 	return 0
 
-def log_order(side, amount, price, date):
-	#update and return a historical list of all orders
-	#remember to append the return value to a historical list
-	#TODO put decerator on it later
-	return [side, amount, price, date]
-
 #log object:
 # constructor: empty
 # methods: convert from data given (from dict, list, tuple, etc)
@@ -111,37 +105,57 @@ def log_order(side, amount, price, date):
 # convert_to
 # getters/setters
 
-class log:
+class Log:
 	def __init__(self):
 		#TODO make local variables local variables side, amount, price, liquid_equity, total_shares, date
-		#TODO keys by j valus??? profit.
-		a = []
+		#TODO keys by j values??? profit.
+		self.a = []
+		self.liquid_equity = 0
+		self.total_shares = 0
+
 	def pprint(self):
 		print(self.a)
-	def append(b, self):
-		self.a.append(b)
-	def get_element()
+
+	def append(self, b):
+		self.update(b)
+		self.a.append([b[0], b[1], b[2], self.liquid_equity, self.total_shares, b[5]])
+
+	def __getitem__(self, item):
+		return self.a[item]
+
+	def get_last_entry(self):
+		return self.a[len(self.a) - 1]
+
+	def update(self, b):
+		if b[0] == 'buy':
+			self.liquid_equity -= b[3]
+			self.total_shares += b[4]
+		else:
+			self.liquid_equity += b[3]
+			self.total_shares -= b[4]
+
+#TODO: Consolidate updating variables into one place ie shares, liquid equity
 
 def bt(j_values, dates, size):
-	log = []
+	log = Log()
 	liquid_equity = 10000
 	prices = pd.read_csv("historical/"+symbol+"_BT.csv")["Open"].tolist()
 	#side, amount, price, liquid_equity, total_shares, date
-	log.append(order('buy', int(liquid_equity/prices[0]), prices[0], liquid_equity, 0, dates[0]))
-	total_shares = log[0][-2]
-	liquid_equity = log[0][3]
-	log.append([None, None, None, None, None, None])
-	log.append(order('buy', 2, prices[2], 2000, 0, dates[2]))
-	print(log[1])
-	print(log[2][3])
+	log.append(['buy', int(liquid_equity/prices[0]), prices[0], liquid_equity, 0, dates[0]])
+	#print(log.get_last_entry()[3])
+	total_shares = log.get_last_entry()[-2]
+	liquid_equity = log.get_last_entry()[3]
+	#print(total_shares)
+	#print(liquid_equity)
+	print(log.get_last_entry())
 	for i in range(0,size):
-		print(i)
+		#print(i)
 		#TODO fix indexing isues with log list
 		side = ''
 		amount = 0
 		currentprice = prices[i]
 		currentdate = b[i]
-		liquid_equity = log[i][3]
+		liquid_equity = log.get_last_entry()[3]
 		j = j_values[i]
 		can_buy = int(liquid_equity/prices[i]) > 1
 		#TODO change buy magnitude and sell magnitude to order magnitude
@@ -151,13 +165,13 @@ def bt(j_values, dates, size):
 			# TODO DO THE ABOVE OUTSIDE OF THE ORDER FUNCTION
 			#create buy or sell orders based on the magnitude
 			amount = buy_magnitude(j, liquid_equity)
-			log.append(order('buy', amount, prices[i], liquid_equity, 0, dates[i]))
+			log.append(['buy', amount, prices[i], liquid_equity, 0, dates[i]])
 		elif should_order(j) == 'sell':
 			amount = sell_magnitude(j, liquid_equity)
-			log.append(order('buy', amount, prices[i], liquid_equity, 0, dates[i]))
-		else:
-			log.append([None, None])
+			log.append(['sell', amount, prices[i], liquid_equity, 0, dates[i]])
 
+	for i in log.a:
+		print(i)
 
 		#if j <= 10 and can_buy:
 			#buys = int((liquid_equity/prices[i]))
